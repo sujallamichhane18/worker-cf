@@ -1,9 +1,19 @@
 export default {
-  async fetch(request, env, ctx) {
-    return new Response("Hello from Cloudflare Workers 🚀", {
-      headers: {
-        "content-type": "text/plain; charset=UTF-8",
-      },
-    });
-  },
+  async fetch(request) {
+
+    const userAgent = request.headers.get("User-Agent") || "";
+
+    // Block curl requests
+    if (userAgent.toLowerCase().includes("curl")) {
+      return new Response("Access Denied", {
+        status: 403,
+        headers: {
+          "content-type": "text/plain"
+        }
+      });
+    }
+
+    // Allow everything else
+    return fetch(request);
+  }
 };
